@@ -1,0 +1,36 @@
+import requests
+import webbrowser
+
+# Replace these with your Dropbox App Key and Secret:
+APP_KEY = 'rz0sdals2xgbdm3'
+APP_SECRET = 'pwshgr55ddwc43z'
+
+# 1️⃣ Step 1: Get Authorization Code
+auth_url = (
+    f"https://www.dropbox.com/oauth2/authorize?client_id={APP_KEY}"
+    f"&response_type=code&token_access_type=offline"
+)
+print("Open this URL in your browser and authorize the app:")
+print(auth_url)
+webbrowser.open(auth_url)
+
+# 2️⃣ Step 2: Paste the returned code here:
+auth_code = input("Paste the authorization code here: ").strip()
+
+# 3️⃣ Step 3: Exchange code for Refresh Token
+token_url = "https://api.dropboxapi.com/oauth2/token"
+data = {
+    "code": auth_code,
+    "grant_type": "authorization_code",
+    "client_id": APP_KEY,
+    "client_secret": APP_SECRET,
+}
+
+response = requests.post(token_url, data=data)
+response.raise_for_status()
+tokens = response.json()
+
+print("\n=== SUCCESS ===")
+print("Access Token:", tokens['access_token'])
+print("Refresh Token:", tokens['refresh_token'])
+print("================")
